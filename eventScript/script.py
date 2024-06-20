@@ -41,23 +41,10 @@ part = part.sort('count',asceding=False)
 part = part.withColumnRenamed('count','collison_num')
 #part.show()
 distr = part.groupBy('collison_num').count()
-distr = distr.sort('collison_num',asceding=False)
+distr = distr.sort('collison_num',asceding=False).select('count')
+#distr.show()
 
 
-def round10(x):
-    return math.ceil(x/10) * 10
-
-
-roundUDF = udf(lambda x: round10(x), DoubleType())
-#distr will contain a count of particles that have the same number of collisons 
-#distr.printSchema()
-distr = distr.select(distr.collison_num.cast(IntegerType()), 'count')
-#distr.printSchema()
-#distr is to hard to read so I have summed groups of particles that haves similar number of collisons
-distr = distr.withColumn('floored', floor(col('collison_num')/10)*10)
-distr = distr.groupBy('floored').sum('count')
-distr = distr.sort(distr.floored.asc())
-#distr.show(10)
 
 #evol will contain only unique collisons by particle
 evol = df3.sort('time').dropDuplicates(['part']).sort('time').drop('part').withColumn('Unique Particle Collisons', monotonically_increasing_id())
@@ -92,7 +79,8 @@ avgd = avgd1.join(avgd2, on=['part']).sort('part').drop('count').withColumnRenam
 avgtot = avga.join(avgd,on='part').sort('part')
 avgtot = avgtot.withColumn('Average Time between Collisons',F.col('sump')/ F.col('count')-F.col('sumn')/ F.col('count'))
 avgtot = avgtot.withColumnRenamed('part', 'Particle Index')
-#avgtot.show()
+avgtot = avgtot.select('Average Time between Collisons').sort('Average Time between Collisons')
+
 
 
 #plotting
@@ -102,14 +90,13 @@ df = df.withColumnRenamed('index','Number of Events')
 pdf = df.toPandas()
 pdf.plot(ax=axes[0,0],kind = 'scatter', x='time', y='Number of Events', title='Number of Events versus Time')
 
-distr = distr.withColumnRenamed('sum(count)','Number of Particles').withColumnRenamed('floored','Collisons per Particle')
 pdistr = distr.toPandas()
-pdistr.plot(ax=axes[0,1], kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
+pdistr.plot(ax=axes[0,1], kind='hist', title='Number of Particles versus Collisons per Particle', xlabel='Collisons per Particle', ylabel='Particle Count') #kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
 
 pevol = evol.toPandas()
 pevol.plot(ax=axes[1,0], kind = 'scatter', x = 'time',y = 'Unique Particle Collisons' ,title='Number of Unique Collisons versus Time')
 
 pavgtot = avgtot.toPandas()
-pavgtot.plot(ax=axes[1,1], kind='scatter', x='Particle Index', y='Average Time between Collisons', title='Particle Index vs. Average Time between Collisons')
+pavgtot.plot(ax=axes[1,1], kind='hist', xlabel='Average Time between Collisons', ylabel="Particle Count", title='Average Time between Collisons')
 plt.show()
 
