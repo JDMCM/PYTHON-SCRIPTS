@@ -8,9 +8,7 @@ from pyspark.sql.session import SparkSession
 import pyspark.sql.functions as F
 import numpy as np
 import pandas as pd
-from tabulate import tabulate
 import matplotlib.pyplot as plt
-from IPython.display import display
 from pyspark.sql.functions import array
 from pyspark.sql.functions import split
 from pyspark.sql.functions import monotonically_increasing_id
