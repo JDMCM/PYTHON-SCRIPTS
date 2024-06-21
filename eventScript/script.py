@@ -26,8 +26,10 @@ split = split(df.value, ' ')
 df = df.withColumn('part1Index', split.getItem(1).cast(DoubleType())) \
     .withColumn('part2Index', split.getItem(2).cast(DoubleType())) \
     .withColumn('time', split.getItem(3).cast(DoubleType())).drop('value')
+
+maxt = df.select(max('time')).collect()[0][0]
 bin_num = 50
-dfo = df.withColumn('time-range', floor(col('time')/(df.select('time').sort('time',ascending=False).collect()[0][0]/bin_num))) \
+dfo = df.withColumn('time-range', floor(col('time')/(maxt/bin_num))*(maxt/bin_num)) \
     .select('time-range').groupBy('time-range').count().sort('time-range')
 
 
