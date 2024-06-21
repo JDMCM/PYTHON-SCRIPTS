@@ -39,10 +39,12 @@ df3 = df3.sort(df.time.asc())
 part = df3.groupBy('part').count()
 part = part.sort('count',asceding=False)
 part = part.withColumnRenamed('count','collison_num')
-#part.show()
-distr = part.groupBy('collison_num').count()
-distr = distr.sort('collison_num',asceding=False).select('count')
-#distr.show()
+#part.sort('collison_num',ascending=False).show()
+
+distr = part.groupBy('collison_num').count().sort('collison_num')
+distr = distr.withColumn('index',floor(col('collison_num')/10)*10)\
+    .groupBy('index').sum('count').sort('index')
+#distr.show(40)
 
 
 
@@ -91,7 +93,7 @@ pdf = df.toPandas()
 pdf.plot(ax=axes[0,0],kind = 'scatter', x='time', y='Number of Events', title='Number of Events versus Time')
 
 pdistr = distr.toPandas()
-pdistr.plot(ax=axes[0,1], kind='hist', title='Number of Particles versus Collisons per Particle', xlabel='Collisons per Particle', ylabel='Particle Count') #kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
+pdistr.plot(ax=axes[0,1], kind='scatter', x='index' ,y='sum(count)', title='Number of Particles versus Collisons per Particle', xlabel='Collisons per Particle', ylabel='Particle Count') #kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
 
 pevol = evol.toPandas()
 pevol.plot(ax=axes[1,0], kind = 'scatter', x = 'time',y = 'Unique Particle Collisons' ,title='Number of Unique Collisons versus Time')
