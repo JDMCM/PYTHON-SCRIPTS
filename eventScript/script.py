@@ -29,9 +29,13 @@ df = df.withColumn('part1Index', split.getItem(1).cast(DoubleType())) \
 dfc = df.select('index','time').withColumnRenamed('index','Cumulative Event Count')
 
 maxt = df.select(max('time')).collect()[0][0]
-bin_num = 100
+bin_num = 1000
 dfo = df.withColumn('time-range', ceil(col('time')/(maxt/bin_num))*(maxt/bin_num)) \
     .select('time-range').groupBy('time-range').count().sort('time-range')
+
+dfuh = dfo.withColumn('index',monotonically_increasing_id()%(bin_num/100))
+dfuh = dfuh.groupBy('index').sum('count').sort('index')
+#dfuh.show()
 
 
 
@@ -109,5 +113,8 @@ pevol.plot(ax=axes[0,1], kind = 'scatter', x = 'time',y = 'Unique Particle Colli
 
 pdfc = dfc.toPandas()
 pdfc.plot(ax=axes[0,0], kind='scatter', x='time',y='Cumulative Event Count', title='Cumulative Event Count vs. Time')
+
+pdfuh =dfuh.toPandas()
+pdfuh.plot(kind='scatter',x='index', y="sum(count)",xlabel='Fraction of Bigtimestep',ylabel='Event Count',title='Event counts per fraction of bigtimestep')
 plt.show()
 
