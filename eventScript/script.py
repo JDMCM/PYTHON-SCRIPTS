@@ -99,7 +99,7 @@ fig, axes = plt.subplots(nrows=2, ncols=2)
 
 dfo = dfo.withColumnRenamed('count','Event Count')
 pdf = dfo.toPandas()
-pdf.plot(ax=axes[1,0],kind = 'bar',width=1, x='time-range', y='Event Count', title='Number of Events versus Time')
+pdf.plot(ax=axes[1,0],kind = 'scatter', x='time-range', y='Event Count', title='Number of Events versus Time')
 
 pdistr = distr.toPandas()
 pdistr.plot(ax=axes[1,1], kind='bar', width=1, x='index' ,y='sum(count)', title='Number of Particles versus Collisons per Particle', xlabel='Collisons per Particle', ylabel='Particle Count') #kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
