@@ -28,8 +28,8 @@ df = df.withColumn('part1Index', split.getItem(1).cast(DoubleType())) \
     .withColumn('time', split.getItem(3).cast(DoubleType())).drop('value')
 
 maxt = df.select(max('time')).collect()[0][0]
-bin_num = 50
-dfo = df.withColumn('time-range', floor(col('time')/(maxt/bin_num))*(maxt/bin_num)) \
+bin_num = 100
+dfo = df.withColumn('time-range', ceil(col('time')/(maxt/bin_num))*(maxt/bin_num)) \
     .select('time-range').groupBy('time-range').count().sort('time-range')
 
 
