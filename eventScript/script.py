@@ -33,7 +33,7 @@ bin_num = 1000
 dfo = df.withColumn('time-range', ceil(col('time')/(maxt/bin_num))*(maxt/bin_num)) \
     .select('time-range').groupBy('time-range').count().sort('time-range')
 
-dfuh = dfo.withColumn('index',monotonically_increasing_id()%(bin_num/100))
+dfuh = dfo.withColumn('index',monotonically_increasing_id()%(bin_num/100)/(bin_num/100))
 dfuh = dfuh.groupBy('index').sum('count').sort('index')
 #dfuh.show()
 
@@ -115,6 +115,6 @@ pdfc = dfc.toPandas()
 pdfc.plot(ax=axes[0,0], kind='scatter', x='time',y='Cumulative Event Count', title='Cumulative Event Count vs. Time')
 
 pdfuh =dfuh.toPandas()
-pdfuh.plot(kind='scatter',x='index', y="sum(count)",xlabel='Fraction of Bigtimestep',ylabel='Event Count',title='Event counts per fraction of bigtimestep')
+pdfuh.plot(kind='scatter',x='index', y="sum(count)",xlabel='Fraction of Bigtimestep',ylabel='Event Count',title='Event counts sumed over fractions of bigtimestep')
 plt.show()
 
