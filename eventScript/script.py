@@ -26,6 +26,7 @@ split = split(df.value, ' ')
 df = df.withColumn('part1Index', split.getItem(1).cast(DoubleType())) \
     .withColumn('part2Index', split.getItem(2).cast(DoubleType())) \
     .withColumn('time', split.getItem(3).cast(DoubleType())).drop('value')
+dfc = df.select('index','time').withColumnRenamed('index','Cumulative Event Count')
 
 maxt = df.select(max('time')).collect()[0][0]
 bin_num = 100
@@ -98,15 +99,15 @@ fig, axes = plt.subplots(nrows=2, ncols=2)
 
 dfo = dfo.withColumnRenamed('count','Event Count')
 pdf = dfo.toPandas()
-pdf.plot(ax=axes[0,0],kind = 'bar',width=1, x='time-range', y='Event Count', title='Number of Events versus Time')
+pdf.plot(ax=axes[1,0],kind = 'bar',width=1, x='time-range', y='Event Count', title='Number of Events versus Time')
 
 pdistr = distr.toPandas()
-pdistr.plot(ax=axes[0,1], kind='bar', width=1, x='index' ,y='sum(count)', title='Number of Particles versus Collisons per Particle', xlabel='Collisons per Particle', ylabel='Particle Count') #kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
+pdistr.plot(ax=axes[1,1], kind='bar', width=1, x='index' ,y='sum(count)', title='Number of Particles versus Collisons per Particle', xlabel='Collisons per Particle', ylabel='Particle Count') #kind = 'scatter', x = 'Collisons per Particle',y = 'Number of Particles', title='Number of Particles versus Collisons per Particle')
 
 pevol = evol.toPandas()
-pevol.plot(ax=axes[1,0], kind = 'scatter', x = 'time',y = 'Unique Particle Collisons' ,title='Number of Unique Collisons versus Time')
+pevol.plot(ax=axes[0,1], kind = 'scatter', x = 'time',y = 'Unique Particle Collisons' ,title='Number of Unique Collisons versus Time')
 
-pavgtot = avgtot.toPandas()
-pavgtot.plot(ax=axes[1,1], kind='hist', xlabel='Average Time between Collisons', ylabel="Particle Count", title='Average Time between Collisons')
+pdfc = dfc.toPandas()
+pdfc.plot(ax=axes[0,0], kind='scatter', x='time',y='Cumulative Event Count', title='Cumulative Event Count vs. Time')
 plt.show()
 
