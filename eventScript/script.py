@@ -60,7 +60,6 @@ df = df.withColumn('index', row_number().over(w))
 dfc = df.select('index','time').withColumnRenamed('index','Cumulative Event Count')
 dfc.show()
 
-
 dfsimp = df.select('p1','p2','time')
 
 dfup = dfsimp.sort('time').dropDuplicates(['p1','p2'])
@@ -98,7 +97,7 @@ if split.__sizeof__() > 5:
     dfsect = dfdelta.filter(col('sect'))#.drop('sect')
     dfpass = dfdelta.filter(col('sect') != True)#.drop('sect')
 
-    
+
 
 maxt = df.select(max('time')).collect()[0][0]
 bin_num = 5000
@@ -109,7 +108,6 @@ dfo = df.withColumn('time-range', ceil(col('time')/(maxt/bin_num))*(maxt/bin_num
 # dfuh = dfo.withColumn('index',monotonically_increasing_id()%(bin_num/100)/(bin_num/500))
 # dfuh = dfuh.groupBy('index').sum('count').sort('index')
 #dfuh.show()
-
 
 
 
