@@ -50,7 +50,6 @@ if split.__sizeof__() > 5:
 df = df.drop('value').drop('index')
 
 w = Window.orderBy(lit('A'))
-df = df.withColumn('index', row_number().over(w))
 
 input2 = input('Enter CSV File Name: ')
 df.toPandas().to_csv(input2)
